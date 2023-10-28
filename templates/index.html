@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>URL Shortener</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        input {
+            margin: 10px;
+            padding: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>URL Shortener</h2>
+    <div>
+        <input type="text" id="longUrl" placeholder="Enter Long URL">
+        <button onclick="createShortUrl()">Shorten URL</button>
+    </div>
+
+    <div class="result">
+        <h3>Search URL</h3>
+        <input type="text" id="searchTerm" placeholder="Enter search term">
+        <button onclick="searchUrl()">Search</button>
+        <div id="searchResults"></div>
+    </div>
+
+    <script>
+        function createShortUrl() {
+            const longUrl = document.getElementById('longUrl').value;
+            fetch('/shorten', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 'long_url': longUrl })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    alert("Short URL: " + window.location.href + data.short_url);
+                });
+        }
+
+        function searchUrl() {
+            const searchTerm = document.getElementById('searchTerm').value;
+            fetch(`/search?term=${searchTerm}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsContainer = document.getElementById('searchResults');
+                    resultsContainer.innerHTML = "";
+                    data.forEach(result => {
+                        const resultElement = document.createElement('p');
+                        resultElement.textContent = `Title: ${result.title}, URL: ${result.url}`;
+                        resultsContainer.appendChild(resultElement);
+                    });
+                });
+        }
+    </script>
+</body>
+
+</html>
+
